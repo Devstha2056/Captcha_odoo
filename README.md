@@ -26,5 +26,4 @@ Odoo module that protects login, signup, password reset, and website forms using
                   
                    - ## Author
                   
-                   - Grantha Network
-                   - 
+                Innovax Solutions Pvt Ltd. 
