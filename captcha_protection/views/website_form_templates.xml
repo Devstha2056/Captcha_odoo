@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Self-contained: looks up its own active website_form config, so it
+         can be t-called from any page template without controller support.
+         Renders nothing unless that config is version v2 - v3 is already
+         handled transparently by ir_http.py's session_info/verify hooks,
+         reusing Odoo core's own website-form-builder JS as-is. -->
+    <template id="website_form_v2_widget" name="Website Form v2 Captcha Widget">
+        <t t-set="_wf_captcha_config" t-value="request.env['captcha.config'].sudo().get_active_config(purpose='website_form')"/>
+        <t t-if="_wf_captcha_config and _wf_captcha_config.version == 'v2'">
+            <div class="mb-3 s_website_form_field">
+                <script src="https://www.google.com/recaptcha/api.js" async="async" defer="defer"/>
+                <div class="g-recaptcha" t-att-data-sitekey="_wf_captcha_config.site_key"/>
+                <!-- Runs synchronously at parse time, before core's Form
+                     interaction (OWL, mounts after DOM ready) can attach -
+                     stops it from also trying its own v3 flow on this form
+                     with a v2 key, which would fail to load entirely. -->
+                <script>document.currentScript.closest('form').classList.add('s_website_form_no_recaptcha');</script>
+            </div>
+        </t>
+    </template>
+
+    <template id="contact_us_captcha" inherit_id="website.contactus" name="Contact Us Captcha">
+        <xpath expr="//div[hasclass('s_website_form_submit')]" position="before">
+            <t t-call="captcha_protection.website_form_v2_widget"/>
+        </xpath>
+    </template>
+
+    <!-- Targets the module's default ticket form template. Sites that
+         customize per-team forms into their own independent views
+         (inherit_id=False) won't be reached by this inheritance - that's
+         a site-specific customization outside this module's scope. -->
+    <template id="helpdesk_ticket_captcha" inherit_id="website_helpdesk.ticket_submit_form" name="Helpdesk Ticket Captcha">
+        <xpath expr="//div[hasclass('s_website_form_submit')]" position="before">
+            <t t-call="captcha_protection.website_form_v2_widget"/>
+        </xpath>
+    </template>
+
+</odoo>
