@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="captcha_widget" name="Captcha Widget">
+        <t t-if="captcha_config">
+            <div class="mb-3 field-captcha">
+                <t t-if="captcha_config.version == 'v2'">
+                    <script src="https://www.google.com/recaptcha/api.js" async="async" defer="defer"/>
+                    <div class="g-recaptcha" t-att-data-sitekey="captcha_config.site_key"/>
+                </t>
+                <t t-else="">
+                    <script t-attf-src="https://www.google.com/recaptcha/api.js?render=#{captcha_config.site_key}" async="async" defer="defer"/>
+                    <div class="g-recaptcha-v3" t-att-data-sitekey="captcha_config.site_key" data-action="submit"/>
+                </t>
+            </div>
+        </t>
+    </template>
+
+    <!-- Odoo core's own google_recaptcha module auto-attaches a competing
+         submit handler to any form[data-captcha], which these forms already
+         carry. That handler races our own widget's handler on the same
+         submit event and can win, dropping our g-recaptcha-response field.
+         We handle these three forms entirely ourselves, so the attribute is
+         removed to keep core's interaction from ever attaching to them. -->
+    <template id="web_login_captcha" inherit_id="web.login" name="Login Captcha">
+        <xpath expr="//div[hasclass('oe_login_buttons')]" position="before">
+            <t t-call="captcha_protection.captcha_widget"/>
+        </xpath>
+        <xpath expr="//form[@data-captcha='login']" position="attributes">
+            <attribute name="data-captcha"></attribute>
+        </xpath>
+    </template>
+
+    <template id="signup_captcha" inherit_id="auth_signup.signup" name="Signup Captcha">
+        <xpath expr="//div[hasclass('oe_login_buttons')]" position="before">
+            <t t-call="captcha_protection.captcha_widget"/>
+        </xpath>
+        <xpath expr="//form[@data-captcha='signup']" position="attributes">
+            <attribute name="data-captcha"></attribute>
+        </xpath>
+    </template>
+
+    <template id="reset_password_captcha" inherit_id="auth_signup.reset_password" name="Reset Password Captcha">
+        <xpath expr="//div[hasclass('oe_login_buttons')]" position="before">
+            <t t-call="captcha_protection.captcha_widget"/>
+        </xpath>
+        <xpath expr="//form[@data-captcha='password_reset']" position="attributes">
+            <attribute name="data-captcha"></attribute>
+        </xpath>
+    </template>
+
+</odoo>
