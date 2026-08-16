@@ -17,7 +17,7 @@ and enforces verification on:
 """,
     "version": "19.0.1.0.0",
     "category": "Extra Tools",
-    "author": "Grantha Network",
+    "author": "Innovax Solutions Pvt. Ltd.",
     "license": "LGPL-3",
     "depends": ["auth_signup", "google_recaptcha", "website", "website_helpdesk"],
     "price": 10.0,
