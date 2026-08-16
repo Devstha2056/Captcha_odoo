@@ -1,5 +1,5 @@
 {
-    "name": "Captcha Protection",
+    "name": "Google Captcha v2",  
     "summary": "Protect login, signup, password reset and website forms with Google reCAPTCHA",
     "description": """
 Captcha Protection
